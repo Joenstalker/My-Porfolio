@@ -100,8 +100,45 @@
             color: var(--accent);
         }
 
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
         .nav-links {
             display: none;
+        }
+
+        .menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+
+        .nav-links.active {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 4rem;
+            left: 0;
+            width: 100%;
+            background-color: var(--bg-secondary);
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            gap: 1.5rem;
+            text-align: center;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .theme-toggle {
@@ -414,11 +451,60 @@
             font-size: 0.9rem;
         }
 
+        /* Mobile Specific Adjustments */
+        @media (max-width: 640px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-content p {
+                font-size: 1.1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                padding: 0 2rem;
+            }
+
+            .edu-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .edu-logos {
+                margin-bottom: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
+            }
+
+            .profile-pic {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
         /* Responsive Breakpoints */
         @media (min-width: 768px) {
             .nav-links {
                 display: flex;
                 gap: 2rem;
+            }
+
+            .nav-links.active {
+                position: static;
+                padding: 0;
+                width: auto;
+                background: none;
+                border: none;
+                flex-direction: row;
+                animation: none;
+            }
+
+            .menu-toggle {
+                display: none;
             }
 
             .projects-grid {
@@ -447,16 +533,21 @@
         <div class="container">
             <nav>
                 <a href="#" class="logo">Portfolio</a>
-                <ul class="nav-links">
+                <ul class="nav-links" id="nav-links">
                     <li><a href="#skills">Skills</a></li>
                     <li><a href="#projects">Projects</a></li>
                     <li><a href="#education">Education</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
-                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
-                    <i class="fas fa-moon"></i>
-                    <i class="fas fa-sun"></i>
-                </button>
+                <div class="nav-container">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+                        <i class="fas fa-moon"></i>
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
             </nav>
         </div>
     </header>
@@ -634,6 +725,28 @@
             
             htmlElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
+        });
+
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        const menuIcon = menuToggle.querySelector('i');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuIcon.classList.toggle('fa-bars');
+            menuIcon.classList.toggle('fa-times');
+            document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+        });
+
+        // Close menu when a link is clicked
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                menuIcon.classList.add('fa-bars');
+                menuIcon.classList.remove('fa-times');
+                document.body.style.overflow = '';
+            });
         });
 
         // Smooth Scrolling for anchor links
